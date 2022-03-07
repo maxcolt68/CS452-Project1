@@ -8,7 +8,7 @@ let time = 0.0;
 
 app.ticker.add((delta) =>{
 	
-	time =+ delta;
+	time += delta;
 	
 	sprite.x = 100 + Math.cos(time/50.0) * 100;
 });
