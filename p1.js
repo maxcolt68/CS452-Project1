@@ -2,11 +2,14 @@
 let plane = "floor";
 let yCubeMovement = 0;
 let yCubeTarget = 0;
-randomYHeight = Math.floor(Math.random() * -489);
+let randomYHeight = Math.floor(Math.random() * -489);
+const attackSpeed = 5;
+alert("Press 'Ok' to begin!");
 
-// Initialize application
+// Initialize applicationl
 let app = new PIXI.Application({width: 1280, height: 720, backgroundColor: 0x403E3E});
 document.body.appendChild(app.view);
+
 
 let rogueCube = new PIXI.Graphics();
 rogueCube.beginFill(0x000000);
@@ -14,9 +17,20 @@ rogueCube.drawRect(1280, 564, 81, 81);
 rogueCube.endFill();
 app.stage.addChild(rogueCube);
 
+function resetRogueCube(){
+	rogueCube.setTransform(0, 0);
+	randomYHeight = Math.floor(Math.random() * -489);
+
+}
+
 
 function sendRogueCube(){
-	rogueCube.setTransform(rogueCube.x - 5, randomYHeight);
+	if(rogueCube.getBounds().x < -81){
+		resetRogueCube();
+	}
+	else{
+		rogueCube.setTransform(rogueCube.x - attackSpeed, randomYHeight);
+	}
 }
 
 
@@ -70,28 +84,46 @@ function checkCollision(){
 	cubeMaxY = cube.getBounds().y + cube.getBounds().height;
 
 	// TODO: Check if cubes are touching
-	if( false ){
-		return true;
-	}
-	else{
+	// if(cubeMinX < rogueCubeMinX && cubeMaxX > rogueCubeMinX && cubeMinY < rogueCubeMinY && cubeMaxY > rogueCubeMinY){
+	// 	return true;
+	// }
+	// else{
+	// 	return false;
+	// }
+
+
+	if(cubeMinX >= rogueCubeMaxX || rogueCubeMinX >= cubeMaxX){
 		return false;
 	}
+
+	if(cubeMaxY <= rogueCubeMinY || rogueCubeMaxY <= cubeMinY){
+		return false;
+	}
+	else{
+		return true;
+	}
+
+
 }
 
-// Loop
- app.ticker.add((delta) =>{
+app.ticker.add(tickerLoop);
+
+
+//app.ticker.add((delta) =>
+ function tickerLoop(){
+	 sendRogueCube();
+	 if(checkCollision()){
+		 app.ticker.stop();
+		 alert("Cube was hit!");
+	 }
 	 if(cube.y != yCubeTarget){
 	 		cube.setTransform(cube.x, cube.y + yCubeMovement);
 		}
-		sendRogueCube();
-		checkCollision();
-
- });
+ }
 
 // Handle button presses
 function buttonHandler(event){
 	let key = event.key;
-	console.log(key)
 
 	if(key == " "){
 		if(plane == "floor"){
@@ -104,5 +136,9 @@ function buttonHandler(event){
 			yCubeTarget = 0;
 			yCubeMovement = 5;
 		}
+	}
+	else if(key == "d"){
+		console.log("CUBE: ", cube.getBounds());
+		console.log("ROGUE: ", rogueCube.getBounds());
 	}
 }
