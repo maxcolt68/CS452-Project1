@@ -1,3 +1,7 @@
+CS-452 Project 1 by Maxwell Barnaby and Carlo Desena
+
+This project is also available on github at https://github.com/maxcolt68/CS452-Project1. The game is hosted as a github page and can be run via https://maxcolt68.github.io/CS452-Project1/ instead of locally as well.
+
 To play the game you first press the 'ok' button. You can control your green cube by pressing the space bar. This changes the y direction of the cube, so if it is going down and you press the space bar it goes up. It then stops
 when it touched either the ceiling or floor. After that, black cubes will randomly appear on the screen going from the right side at two speeds, a slow speed and a fast speed. If the green cube touches a black cube then you lose. 
 At the same time as those cubes appear, yellow cubes will also appear. These are called coin cubes. When your green cube touches a coin cube you collect it. If you collect 15 coins without touching a black cube then you win.
