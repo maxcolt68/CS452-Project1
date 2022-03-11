@@ -7,7 +7,10 @@ let randomCoinYHeight = Math.floor(Math.random() * -489);
 //let randomWinYHeight = Math.floor(Math.random() * -489);
 const attackSpeed = 5;
 alert("Press 'Ok' to begin!");
-var coinCounter = 0;
+let coinCounter = 0;
+console.log(typeof(String(coinCounter)))
+
+
 var coinHitFlag = false;
 
 // Initialize applicationl
@@ -222,6 +225,7 @@ app.ticker.add(tickerLoop);
 	 else if( !coinHitFlag && checkCoinCollision() ){
 		 	coinHitFlag = true;
 		 	coinCounter++;
+			document.getElementById("coin").innerHTML = "Coins: " + coinCounter;
 		 	//("You got a coin!");
 	 }
 	 if(cube.y != yCubeTarget){
