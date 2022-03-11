@@ -3,13 +3,16 @@ let plane = "floor";
 let yCubeMovement = 0;
 let yCubeTarget = 0;
 let randomYHeight = Math.floor(Math.random() * -489);
+let randomYHeight2 = Math.floor(Math.random() * -489);
 let randomCoinYHeight = Math.floor(Math.random() * -489);
 //let randomWinYHeight = Math.floor(Math.random() * -489);
-const attackSpeed = 5;
+let rogueAttackSpeed = Math.floor(Math.random() * 3) + 4;
+let rogueAttackSpeed2 = Math.floor(Math.random() * 3) + 4;
+let coinAttackSpeed = Math.floor(Math.random() * 6) + 3;
 alert("Press 'Ok' to begin! Collect 15 Coins to win the game!");
 var coinCounter = 0;
 var coinHitFlag = false;
-let text = new PIXI.Text('You have collected ' + coinCounter + ' Coins!',{fontFamily : 'Comic Sans MS', fontSize: 24, fill : 0xffA500, align : 'center'});
+let text = new PIXI.Text('You have collected ' + coinCounter + '/15 Coins!',{fontFamily : 'Comic Sans MS', fontSize: 24, fill : 0xffA500, align : 'center'});
 
 // Initialize applicationl
 let app = new PIXI.Application({width: 1280, height: 720, backgroundColor: 0x403E3E});
@@ -21,6 +24,12 @@ rogueCube.beginFill(0x000000);
 rogueCube.drawRect(1280, 564, 81, 81);
 rogueCube.endFill();
 app.stage.addChild(rogueCube);
+
+let rogueCube2 = new PIXI.Graphics();
+rogueCube2.beginFill(0x000000);
+rogueCube2.drawRect(1280, 564, 81, 81);
+rogueCube2.endFill();
+app.stage.addChild(rogueCube2);
 
 let coinCube = new PIXI.Graphics();			//create objective cube 'coin'
 coinCube.beginFill(0xFFFF00);
@@ -37,6 +46,14 @@ app.stage.addChild(winCube);
 function resetRogueCube(){
 	rogueCube.setTransform(0, 0);
 	randomYHeight = Math.floor(Math.random() * -489);
+	rogueAttackSpeed = Math.floor(Math.random() * 3) + 4;
+
+}
+
+function resetRogueCube2(){
+	rogueCube2.setTransform(0, 0);
+	randomYHeight2 = Math.floor(Math.random() * -489);
+	rogueAttackSpeed2 = Math.floor(Math.random() * 3) + 4;
 
 }
 
@@ -44,14 +61,15 @@ function resetCoinCube(){										//reset coin cube
 	coinHitFlag = false;
 	coinCube.setTransform(0, 0);
 	randomCoinYHeight = Math.floor(Math.random() * -489);
+	coinAttackSpeed = Math.floor(Math.random() * 6) + 3;
 
 	if(coinCounter == 1){
-		
+
 		app.stage.removeChild(text);
-		text = new PIXI.Text('You have collected ' + coinCounter + ' Coin!',{fontFamily : 'Comic Sans MS', fontSize: 24, fill : 0xffA500, align : 'center'});
+		text = new PIXI.Text('You have collected ' + coinCounter + '/15 Coin!',{fontFamily : 'Comic Sans MS', fontSize: 24, fill : 0xffA500, align : 'center'});
 	}
 	app.stage.addChild(text);
-	
+
 
 }
 
@@ -68,7 +86,16 @@ function sendRogueCube(){
 		resetRogueCube();
 	}
 	else{
-		rogueCube.setTransform(rogueCube.x - attackSpeed, randomYHeight);
+		rogueCube.setTransform(rogueCube.x - rogueAttackSpeed, randomYHeight);
+	}
+}
+
+function sendRogueCube2(){
+	if(rogueCube2.getBounds().x < -81){
+		resetRogueCube2();
+	}
+	else{
+		rogueCube2.setTransform(rogueCube2.x - rogueAttackSpeed2, randomYHeight2);
 	}
 }
 
@@ -77,7 +104,7 @@ function sendCoinCube(){
 		resetCoinCube();
 	}
 	else{
-		coinCube.setTransform(coinCube.x - attackSpeed, randomCoinYHeight);
+		coinCube.setTransform(coinCube.x - coinAttackSpeed, randomCoinYHeight);
 	}
 }
 
@@ -156,7 +183,6 @@ function checkCollision(){
 	// 	return false;
 	// }
 
-
 	if(cubeMinX >= rogueCubeMaxX || rogueCubeMinX >= cubeMaxX){
 		return false;
 	}
@@ -168,6 +194,37 @@ function checkCollision(){
 		return true;
 	}
 
+}
+
+function checkCollision2(){
+	rogueCubeMinX = rogueCube2.getBounds().x;
+	rogueCubeMaxX = rogueCube2.getBounds().x + rogueCube2.getBounds().width;
+	rogueCubeMinY = rogueCube2.getBounds().y;
+	rogueCubeMaxY = rogueCube2.getBounds().y + rogueCube2.getBounds().height;
+
+	cubeMinX = cube.getBounds().x;
+	cubeMaxX = cube.getBounds().x + cube.getBounds().width;
+	cubeMinY = cube.getBounds().y;
+	cubeMaxY = cube.getBounds().y + cube.getBounds().height;
+
+	// TODO: Check if cubes are touching
+	// if(cubeMinX < rogueCubeMinX && cubeMaxX > rogueCubeMinX && cubeMinY < rogueCubeMinY && cubeMaxY > rogueCubeMinY){
+	// 	return true;
+	// }
+	// else{
+	// 	return false;
+	// }
+
+	if(cubeMinX >= rogueCubeMaxX || rogueCubeMinX >= cubeMaxX){
+		return false;
+	}
+
+	if(cubeMaxY <= rogueCubeMinY || rogueCubeMaxY <= cubeMinY){
+		return false;
+	}
+	else{
+		return true;
+	}
 
 }
 
@@ -227,29 +284,37 @@ app.ticker.add(tickerLoop);
 //app.ticker.add((delta) =>
  function tickerLoop(){
 	 sendRogueCube();
+	 if(coinCounter > 9){
+		 sendRogueCube2();
+	 }
+
 	 sendCoinCube();
-	 if(checkCollision()){
+	 if(checkCollision() || checkCollision2()){
+		 loseText = new PIXI.Text("You Lost!", {fontFamily : 'Comic Sans MS', fontSize: 50, fill : 0xAD0205, align : 'center'});
+ 		 loseText.anchor.set(0.5);
+ 		 loseText.setTransform(640, 360);
+		 app.stage.addChild(loseText);
 		 app.ticker.stop();
-		 alert("Cube was hit!");
 	 }
 	 else if( !coinHitFlag && checkCoinCollision() ){
 		 	coinHitFlag = true;
 		 	coinCounter++;
-
 			app.stage.removeChild(text);
+			text = new PIXI.Text('You have collected ' + coinCounter + '/15 Coins!',{fontFamily : 'Comic Sans MS', fontSize: 24, fill : 0xffa500, align : 'center'});
+			resetCoinCube();
 
-			text = new PIXI.Text('You have collected ' + coinCounter + ' Coins!',{fontFamily : 'Comic Sans MS', fontSize: 24, fill : 0xffa500, align : 'center'});
 
-			
 
-			
 	 }
 	 if(cube.y != yCubeTarget){
 	 		cube.setTransform(cube.x, cube.y + yCubeMovement);
 		}
 
 	if(coinCounter >= 15){
-		alert("YOU WON THE GAME!!!!");
+		winText = new PIXI.Text("You Won!", {fontFamily : 'Comic Sans MS', fontSize: 50, fill : 0x148516, align : 'center'});
+		winText.anchor.set(0.5);
+		winText.setTransform(640, 360);
+		app.stage.addChild(winText);
 		app.ticker.stop();
 	}
  }
