@@ -6,12 +6,10 @@ let randomYHeight = Math.floor(Math.random() * -489);
 let randomCoinYHeight = Math.floor(Math.random() * -489);
 //let randomWinYHeight = Math.floor(Math.random() * -489);
 const attackSpeed = 5;
-alert("Press 'Ok' to begin!");
-let coinCounter = 0;
-console.log(typeof(String(coinCounter)))
-
-
+alert("Press 'Ok' to begin! Collect 15 Coins to win the game!");
+var coinCounter = 0;
 var coinHitFlag = false;
+let text = new PIXI.Text('You have collected ' + coinCounter + ' Coins!',{fontFamily : 'Comic Sans MS', fontSize: 24, fill : 0xffA500, align : 'center'});
 
 // Initialize applicationl
 let app = new PIXI.Application({width: 1280, height: 720, backgroundColor: 0x403E3E});
@@ -46,6 +44,14 @@ function resetCoinCube(){										//reset coin cube
 	coinHitFlag = false;
 	coinCube.setTransform(0, 0);
 	randomCoinYHeight = Math.floor(Math.random() * -489);
+
+	if(coinCounter == 1){
+		
+		app.stage.removeChild(text);
+		text = new PIXI.Text('You have collected ' + coinCounter + ' Coin!',{fontFamily : 'Comic Sans MS', fontSize: 24, fill : 0xffA500, align : 'center'});
+	}
+	app.stage.addChild(text);
+	
 
 }
 
@@ -121,10 +127,14 @@ cubeOutline.endFill();
 cube.addChild(cubeOutline);
 cube.addChild(cubeFill);
 
+
+//add coin counter
+
 // Add elements to stage
 app.stage.addChild(ceiling);
 app.stage.addChild(floor);
 app.stage.addChild(cube);
+//app.stage.addChild(text);
 
 //
 function checkCollision(){
@@ -225,8 +235,14 @@ app.ticker.add(tickerLoop);
 	 else if( !coinHitFlag && checkCoinCollision() ){
 		 	coinHitFlag = true;
 		 	coinCounter++;
-			document.getElementById("coin").innerHTML = "Coins: " + coinCounter;
-		 	//("You got a coin!");
+
+			app.stage.removeChild(text);
+
+			text = new PIXI.Text('You have collected ' + coinCounter + ' Coins!',{fontFamily : 'Comic Sans MS', fontSize: 24, fill : 0xffa500, align : 'center'});
+
+			
+
+			
 	 }
 	 if(cube.y != yCubeTarget){
 	 		cube.setTransform(cube.x, cube.y + yCubeMovement);
