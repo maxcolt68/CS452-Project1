@@ -1,3 +1,5 @@
+// Project 1 by Maxwell Barnaby and Carlo Desena
+
 // Necessary parameters
 let plane = "floor";
 let yCubeMovement = 0;
