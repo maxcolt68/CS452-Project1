@@ -3,8 +3,12 @@ let plane = "floor";
 let yCubeMovement = 0;
 let yCubeTarget = 0;
 let randomYHeight = Math.floor(Math.random() * -489);
+let randomCoinYHeight = Math.floor(Math.random() * -489);
+//let randomWinYHeight = Math.floor(Math.random() * -489);
 const attackSpeed = 5;
 alert("Press 'Ok' to begin!");
+var coinCounter = 0;
+var coinHitFlag = false;
 
 // Initialize applicationl
 let app = new PIXI.Application({width: 1280, height: 720, backgroundColor: 0x403E3E});
@@ -17,12 +21,38 @@ rogueCube.drawRect(1280, 564, 81, 81);
 rogueCube.endFill();
 app.stage.addChild(rogueCube);
 
+let coinCube = new PIXI.Graphics();			//create objective cube 'coin'
+coinCube.beginFill(0xFFFF00);
+coinCube.drawRect(1280, 564, 81, 81);
+coinCube.endFill();
+app.stage.addChild(coinCube);
+
+let winCube = new PIXI.Graphics();			//create win condition cube
+winCube.beginFill(0xFF5F1F);
+winCube.drawRect(1280, 564, 81, 81);
+winCube.endFill();
+app.stage.addChild(winCube);
+
 function resetRogueCube(){
 	rogueCube.setTransform(0, 0);
 	randomYHeight = Math.floor(Math.random() * -489);
 
 }
 
+function resetCoinCube(){										//reset coin cube
+	coinHitFlag = false;
+	coinCube.setTransform(0, 0);
+	randomCoinYHeight = Math.floor(Math.random() * -489);
+
+}
+
+/*
+function resetWinCube(){										//reset win cube
+	winCube.setTransform(0, 0);
+	randomWinYHeight = Math.floor(Math.random() * -489);
+
+}
+*/
 
 function sendRogueCube(){
 	if(rogueCube.getBounds().x < -81){
@@ -33,7 +63,29 @@ function sendRogueCube(){
 	}
 }
 
-//hello world
+function sendCoinCube(){
+	if(coinCube.getBounds().x < -81){
+		resetCoinCube();
+	}
+	else{
+		coinCube.setTransform(coinCube.x - attackSpeed, randomCoinYHeight);
+	}
+}
+
+/*
+function sendWinCube(){
+	if(winCube.getBounds().x < -81){
+		resetWinCube();
+	}
+	else{
+		WinCube.setTransform(winCube.x - attackSpeed, randomWinYHeight);
+	}
+}
+*/
+
+
+
+
 
 // Create ceiling, floor, and player cube objects
 let ceiling = new PIXI.Graphics();
@@ -106,20 +158,82 @@ function checkCollision(){
 
 }
 
+function checkCoinCollision(){
+	coinCubeMinX = coinCube.getBounds().x;
+	coinCubeMaxX = coinCube.getBounds().x + coinCube.getBounds().width;
+	coinCubeMinY = coinCube.getBounds().y;
+	coinCubeMaxY = coinCube.getBounds().y + coinCube.getBounds().height;
+
+	cubeMinX = cube.getBounds().x;
+	cubeMaxX = cube.getBounds().x + cube.getBounds().width;
+	cubeMinY = cube.getBounds().y;
+	cubeMaxY = cube.getBounds().y + cube.getBounds().height;
+
+	if(cubeMinX >= coinCubeMaxX || coinCubeMinX >= cubeMaxX){
+		return false;
+	}
+
+	if(cubeMaxY <= coinCubeMinY || coinCubeMaxY <= cubeMinY){
+		return false;
+	}
+	else{
+		return true;
+	}
+}
+
+/*
+function checkWinCollision(){
+	winCubeMinX = winCube.getBounds().x;
+	winCubeMaxX = winCube.getBounds().x + winCube.getBounds().width;
+	winCubeMinY = winCube.getBounds().y;
+	winCubeMaxY = winCube.getBounds().y + winCube.getBounds().height;
+
+	cubeMinX = cube.getBounds().x;
+	cubeMaxX = cube.getBounds().x + cube.getBounds().width;
+	cubeMinY = cube.getBounds().y;
+	cubeMaxY = cube.getBounds().y + cube.getBounds().height;
+
+	if(cubeMinX >= winCubeMaxX || winCubeMinX >= cubeMaxX){
+		return false;
+	}
+
+	if(cubeMaxY <= winCubeMinY || winCubeMaxY <= cubeMinY){
+		return false;
+	}
+	else{
+		return true;
+	}
+
+}
+*/
+
+
 app.ticker.add(tickerLoop);
 
 
 //app.ticker.add((delta) =>
  function tickerLoop(){
 	 sendRogueCube();
+	 sendCoinCube();
 	 if(checkCollision()){
 		 app.ticker.stop();
 		 alert("Cube was hit!");
 	 }
+	 else if( !coinHitFlag && checkCoinCollision() ){
+		 	coinHitFlag = true;
+		 	coinCounter++;
+		 	//("You got a coin!");
+	 }
 	 if(cube.y != yCubeTarget){
 	 		cube.setTransform(cube.x, cube.y + yCubeMovement);
 		}
+
+	if(coinCounter >= 15){
+		alert("YOU WON THE GAME!!!!");
+		app.ticker.stop();
+	}
  }
+
 
 // Handle button presses
 function buttonHandler(event){
